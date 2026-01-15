@@ -19,4 +19,4 @@ Task Kotlin data class that includes:
 
 ## Demo video
 
-[Link to Demo video](https://unioulu-my.sharepoint.com/:v:/r/personal/t3vaje00_students_oamk_fi/Documents/Kotlin/kotlinweek1.webm?csf=1&web=1&e=Moh5jh&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
+[Link to Demo video](https://unioulu-my.sharepoint.com/:v:/g/personal/t3vaje00_students_oamk_fi/IQCxc0nTR4yTQ6AJIyMbk7TIAUz7bQUNAp1lDsbZ5iA3F7I)
