@@ -18,6 +18,11 @@ fun filterByDone(list: List<Task>, done: Boolean): List<Task> {
 }
 
 fun sortByDueDate(list: List<Task>): List<Task> {
-    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-    return list.sortedBy { task -> LocalDate.parse(task.dueDate, formatter) }
+    return list.sortedBy { task ->
+        val parts = task.dueDate.split("-") // dd-MM-yyyy
+        val dd = parts.getOrNull(0) ?: "00"
+        val mm = parts.getOrNull(1) ?: "00"
+        val yyyy = parts.getOrNull(2) ?: "0000"
+        "$yyyy$mm$dd" // sortable key
+    }
 }
