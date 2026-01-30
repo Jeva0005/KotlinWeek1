@@ -1,6 +1,7 @@
-package com.example.week1.ui
+package com.example.week1.view
 
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,21 +23,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.week1.domain.Task
-import com.example.week1.domain.filterByDone
+import com.example.week1.model.Task
 import com.example.week1.ui.theme.Week1Theme
 import com.example.week1.viewmodel.TaskViewModel
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, vm: TaskViewModel = viewModel()) {
 
-    val taskList = vm.tasks
+    val taskList by vm.tasks.collectAsState()
 
     var filterDone by remember { mutableStateOf<Boolean?>(null) }
 
@@ -44,10 +45,12 @@ fun HomeScreen(modifier: Modifier = Modifier, vm: TaskViewModel = viewModel()) {
     var descriptionText by remember { mutableStateOf("") }
     var dueDateText by remember { mutableStateOf("") }
 
+    var selectedTask by remember { mutableStateOf<Task?>(null) }
+
     val shownList: List<Task> = when (filterDone) {
         null -> taskList
-        true -> filterByDone(taskList, true)
-        false -> filterByDone(taskList, false)
+        true -> taskList.filter { it.done }
+        false -> taskList.filter { !it.done }
     }
 
     val configuration = LocalConfiguration.current
@@ -146,7 +149,9 @@ fun HomeScreen(modifier: Modifier = Modifier, vm: TaskViewModel = viewModel()) {
 
             items(items = shownList, key = { it.id }) { task ->
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { selectedTask = task },
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Checkbox(
@@ -168,6 +173,21 @@ fun HomeScreen(modifier: Modifier = Modifier, vm: TaskViewModel = viewModel()) {
                 Spacer(modifier = Modifier.height(6.dp))
             }
         }
+    }
+
+    if (selectedTask != null) {
+        DetailDialog(
+            task = selectedTask!!,
+            onDismiss = { selectedTask = null },
+            onSave = { updated ->
+                vm.updateTask(updated)
+                selectedTask = null
+            },
+            onDelete = { id ->
+                vm.removeTask(id)
+                selectedTask = null
+            }
+        )
     }
 }
 
