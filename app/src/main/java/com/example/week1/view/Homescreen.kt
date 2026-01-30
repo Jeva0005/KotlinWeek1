@@ -39,15 +39,15 @@ fun HomeScreen(modifier: Modifier = Modifier, vm: TaskViewModel = viewModel()) {
 
     val taskList by vm.tasks.collectAsState()
 
-    var filterDone by remember { mutableStateOf<Boolean?>(null) }
+    val filterDone = remember { mutableStateOf<Boolean?>(null) }
 
     var titleText by remember { mutableStateOf("") }
     var descriptionText by remember { mutableStateOf("") }
     var dueDateText by remember { mutableStateOf("") }
 
-    var selectedTask by remember { mutableStateOf<Task?>(null) }
+    val selectedTask = remember { mutableStateOf<Task?>(null) }
 
-    val shownList: List<Task> = when (filterDone) {
+    val shownList: List<Task> = when (filterDone.value) {
         null -> taskList
         true -> taskList.filter { it.done }
         false -> taskList.filter { !it.done }
@@ -113,10 +113,10 @@ fun HomeScreen(modifier: Modifier = Modifier, vm: TaskViewModel = viewModel()) {
                         val nextId = (taskList.maxOfOrNull { it.id } ?: 0) + 1
                         val newTask = Task(
                             id = nextId,
-                            title = if (titleText.isBlank()) "Task $nextId" else titleText,
-                            description = if (descriptionText.isBlank()) "Description $nextId" else descriptionText,
+                            title = titleText.ifBlank { "Task $nextId" },
+                            description = descriptionText.ifBlank { "Description $nextId" },
                             priority = 1,
-                            dueDate = if (dueDateText.isBlank()) "01-01-2026" else dueDateText,
+                            dueDate = dueDateText.ifBlank { "01-01-2026" },
                             done = false
                         )
                         vm.addTask(newTask)
@@ -137,11 +137,11 @@ fun HomeScreen(modifier: Modifier = Modifier, vm: TaskViewModel = viewModel()) {
 
             item {
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Button(onClick = { filterDone = null }) { Text("Show all") }
+                    Button(onClick = { filterDone.value = null }) { Text("Show all") }
                     Spacer(modifier = Modifier.height(0.dp).padding(6.dp))
-                    Button(onClick = { filterDone = true }) { Text("Show done") }
+                    Button(onClick = { filterDone.value = true }) { Text("Show done") }
                     Spacer(modifier = Modifier.height(0.dp).padding(6.dp))
-                    Button(onClick = { filterDone = false }) { Text("Show not done") }
+                    Button(onClick = { filterDone.value = false }) { Text("Show not done") }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -151,7 +151,7 @@ fun HomeScreen(modifier: Modifier = Modifier, vm: TaskViewModel = viewModel()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { selectedTask = task },
+                        .clickable { selectedTask.value = task },
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Checkbox(
@@ -175,17 +175,18 @@ fun HomeScreen(modifier: Modifier = Modifier, vm: TaskViewModel = viewModel()) {
         }
     }
 
-    if (selectedTask != null) {
+    val taskToEdit = selectedTask.value
+    if (taskToEdit != null) {
         DetailDialog(
-            task = selectedTask!!,
-            onDismiss = { selectedTask = null },
+            task = taskToEdit,
+            onDismiss = { selectedTask.value = null },
             onSave = { updated ->
                 vm.updateTask(updated)
-                selectedTask = null
+                selectedTask.value = null
             },
             onDelete = { id ->
                 vm.removeTask(id)
-                selectedTask = null
+                selectedTask.value = null
             }
         )
     }
