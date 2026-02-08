@@ -1,20 +1,21 @@
 package com.example.week1.view
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.ui.unit.dp
 import com.example.week1.model.Task
 
 @Composable
 fun DetailDialog(
     task: Task,
+    isNew: Boolean,
     onDismiss: () -> Unit,
     onSave: (Task) -> Unit,
     onDelete: (Int) -> Unit
@@ -25,7 +26,7 @@ fun DetailDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Task details") },
+        title = { Text(if (isNew) "Add task" else "Edit task") },
         text = {
             Column {
                 OutlinedTextField(
@@ -53,7 +54,13 @@ fun DetailDialog(
             }) { Text("Save") }
         },
         dismissButton = {
-            Button(onClick = { onDelete(task.id) }) { Text("Delete") }
+            Column {
+                Button(onClick = onDismiss) { Text("Cancel") }
+                if (!isNew) {
+                    Spacer(Modifier.height(8.dp))
+                    Button(onClick = { onDelete(task.id) }) { Text("Delete") }
+                }
+            }
         }
     )
 }
